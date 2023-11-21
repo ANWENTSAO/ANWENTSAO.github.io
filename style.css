@@ -1,0 +1,32 @@
+:root {
+    --color-gold: #B99362;
+    /* font-family: 'Noto Sans Traditional Chinese'; */
+    font-family: DFKai-sb;
+}
+
+body{
+    background-color:antiquewhite;
+}
+
+table,th{
+    background-color: white;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+input{
+    border: 1px solid white;
+}
+
+.button{
+    background-color: gainsboro;
+    border: 0px;
+}
+
+td{
+    border: 1px solid black;
+    padding: 0px;
+    border-collapse: collapse;
+    text-align: center;
+}
+
