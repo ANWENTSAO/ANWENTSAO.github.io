@@ -42,7 +42,17 @@ class bulge_parameter{
     }
 }
 
-var Theta,Alpha,last_support,excavation_depth;
+class a_p_pressure{
+    // t_p for top_buttom, b_p for button_buttom
+    constructor(height,t_p,b_p){
+        this.height = height;
+        this.t_p = t_p;
+        this.b_p = b_p;
+    }
+}
+
+// G_W_T for ground_water_table
+var Theta,Alpha,last_support,excavation_depth,G_W_T;
 
 //soil 存土層資料
 var soil = [];
@@ -54,11 +64,14 @@ var add_value;
 function add_basic_parameter(){
     Theta = document.getElementById("Theta").value;
     Alpha = document.getElementById("Alpha").value;
+    G_W_T = document.getElementById("G_W_T").value;
     last_support = document.getElementById("last_support").value;
     excavation_depth = document.getElementById("excavation_depth").value;
 
+
     document.getElementById("Theta").readOnly = true;
     document.getElementById("Alpha").readOnly = true;
+    document.getElementById("G_W_T").readOnly = true;
     document.getElementById("last_support").readOnly = true;
     document.getElementById("excavation_depth").readOnly = true;
     // document.getElementById("Theta").value = "";
@@ -116,7 +129,8 @@ var bugle_arr = [];
 // 要拿掉 測試用
 ex_load = 1.5;
 
-//隆起 function
+//隆起 function (bulge inspection function)
+
 function M_R_bugle_inspection(RW_height){
     bugle_arr = [];
     var radius = RW_height - last_support;
@@ -259,9 +273,59 @@ function bugle_inspection(){
     
 }
 
-//砂湧 function
+// 內擠 function (Internal squeeze function)
+
+// var list_of_class = ["soil_classification", "depth", "unit_weight", "N_value", "C_value", "phi", "Su", "Ka", "Kp", "Ko", "Kh"];
+// 主動土壓力 => Fa,La
+var a_p_soil_arr,p_p_soil_arr;
+
+function active_earth_pressure(RW_height){
+    a_p_soil_arr = [];
+    var last_soil_above_G_W_T = soil.findIndex(value => value.depth > G_W_T);
+
+    // 地下水位面以上
+    for(var i = 0;i < last_soil_above_G_W_T;i++)
+    {   
+        if(i == 0)
+        {
+            var active_p_para = new a_p_pressure(
+                soil[i].depth,
+                0,
+                soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka)
+            );
+            a_p_soil_arr.push(active_p_para);
+        }else
+        {
+            var active_p_para = new a_p_pressure(
+                soil[i].depth - soil[i-1].depth,
+                soil[i-1].Ka * (soil[i-1].unit_weight * last_height + ex_load) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+            );
+            a_p_soil_arr.push(active_p_para);
+        };       
+    };
+
+    // 地下水位面土壤層
+    if(last_soil_above_G_W_T = 0)
+    {
+        
+    }else
+    {
+
+    }
+
+}
 
 
+
+
+
+
+//砂湧 function (Shayong inspection function)
+
+
+
+// 上舉 function (Up for inspection function)
 
 
 

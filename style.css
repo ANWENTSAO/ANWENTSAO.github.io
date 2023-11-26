@@ -8,13 +8,19 @@ body{
     background-color:antiquewhite;
 }
 
-table,th{
+table{
+    /* 不加table-layout會使table width固定 */
+    table-layout: fixed;
+    /* width: 80%; */
     background-color: white;
     border: 1px solid black;
     border-collapse: collapse;
 }
 
 input{
+    width: 90%;
+    /* td的80% */
+    /* width: 80%; */
     border: 1px solid white;
 }
 
@@ -23,7 +29,7 @@ input{
     border: 0px;
 }
 
-td{
+td,th{
     border: 1px solid black;
     padding: 0px;
     border-collapse: collapse;
