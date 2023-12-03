@@ -16,7 +16,7 @@ class class_soil{
                     /(Math.cos(Theta_cl/180*Math.PI)**2*
                       Math.cos((Theta_cl+phi/2)/180*Math.PI)*
                       ((1+Math.sqrt(Math.sin((phi+phi/2)/180*Math.PI)*Math.sin((phi-Alpha_cl)/180*Math.PI)
-                      /(Math.cos((phi/2+Theta_cl)/180*Math.PI)*Math.cos((Theta_cl-Alpha_cl)/180*Math.PI))))**2)),-2);
+                      /(Math.cos((phi/2+Theta_cl)/180*Math.PI)*Math.cos((Theta_cl-Alpha_cl)/180*Math.PI))))**2))*100)/100;
         this.Kp = Math.round(Math.cos((phi+Theta_cl)/180*Math.PI)**2
                     /(Math.cos(Theta_cl/180*Math.PI)**2*
                     Math.cos((Theta_cl-phi/2)/180*Math.PI)*
@@ -44,10 +44,13 @@ class bulge_parameter{
 
 class a_p_pressure{
     // t_p for top_buttom, b_p for button_buttom
-    constructor(height,t_p,b_p){
+    constructor(upper,height,t_p,b_p,centroid_posi,Pa){
+        this.upper = upper;
         this.height = height;
         this.t_p = t_p;
         this.b_p = b_p;
+        this.centroid_posi = upper + height/3*(t_p+2*b_p)/(t_p+b_p);
+        this.Pa = (t_p+b_p)*height/2;
     }
 }
 
@@ -62,11 +65,11 @@ var list_of_class = ["soil_classification", "depth", "unit_weight", "N_value", "
 var add_value;
 
 function add_basic_parameter(){
-    Theta = document.getElementById("Theta").value;
-    Alpha = document.getElementById("Alpha").value;
-    G_W_T = document.getElementById("G_W_T").value;
-    last_support = document.getElementById("last_support").value;
-    excavation_depth = document.getElementById("excavation_depth").value;
+    Theta = Number(document.getElementById("Theta").value);
+    Alpha = Number(document.getElementById("Alpha").value);
+    G_W_T = Number(document.getElementById("G_W_T").value);
+    last_support = Number(document.getElementById("last_support").value);
+    excavation_depth = Number(document.getElementById("excavation_depth").value);
 
 
     document.getElementById("Theta").readOnly = true;
@@ -252,25 +255,38 @@ function bugle_inspection(){
     var failurer = 0;
     var breaker = 0;
     var RW_WALL_Height = 1.7*excavation_depth;
+    var Su_is_not_exist = 0;
 
-    do
+    for(var i = 0;i<soil.length;i++)
     {
-        if((M_R_bugle_inspection(RW_WALL_Height)/M_D_bugle_inspection(RW_WALL_Height)>=1.2) && (failurer == 1))
+        if(soil[i].Su == 0)
         {
-            RW_WALL_Height = Math.round(RW_WALL_Height);
-            breaker = 1;
-        }else if(M_R_bugle_inspection(RW_WALL_Height)/M_D_bugle_inspection(RW_WALL_Height)>=1.2)
+            Su_is_not_exist = Su_is_not_exist + 1; 
+        }
+    }
+
+    if(Su_is_not_exist < soil.length)
+    {
+        do
         {
-            RW_WALL_Height = RW_WALL_Height - 0.5;
-        }else
-        {
-            RW_WALL_Height = RW_WALL_Height + 0.5;
-            failurer = 1;
-        };
-    }while(breaker == 0 );
-    
-    document.getElementById("bulge").innerHTML = RW_WALL_Height;
-    
+            if((M_R_bugle_inspection(RW_WALL_Height)/M_D_bugle_inspection(RW_WALL_Height)>=1.2) && (failurer == 1))
+            {
+                RW_WALL_Height = Math.round(RW_WALL_Height);
+                breaker = 1;
+            }else if(M_R_bugle_inspection(RW_WALL_Height)/M_D_bugle_inspection(RW_WALL_Height)>=1.2)
+            {
+                RW_WALL_Height = RW_WALL_Height - 0.5;
+            }else
+            {
+                RW_WALL_Height = RW_WALL_Height + 0.5;
+                failurer = 1;
+            };
+        }while(breaker == 0 );
+        document.getElementById("bulge").innerHTML = RW_WALL_Height;
+    }else{
+        window.alert("各層參數中Su皆為0 , 無法提供剪力阻抗 , 請從新輸入");
+        document.getElementById("bulge").innerHTML = "請從新輸入";
+    }
 }
 
 // 內擠 function (Internal squeeze function)
@@ -280,44 +296,256 @@ function bugle_inspection(){
 var a_p_soil_arr,p_p_soil_arr;
 
 function active_earth_pressure(RW_height){
+ 
     a_p_soil_arr = [];
     var last_soil_above_G_W_T = soil.findIndex(value => value.depth > G_W_T);
 
-    // 地下水位面以上
-    for(var i = 0;i < last_soil_above_G_W_T;i++)
+    if(G_W_T == 0)
     {   
-        if(i == 0)
+        for( var i = 0; i < soil.length; i++ )
         {
-            var active_p_para = new a_p_pressure(
-                soil[i].depth,
-                0,
-                soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka)
-            );
-            a_p_soil_arr.push(active_p_para);
-        }else
-        {
-            var active_p_para = new a_p_pressure(
-                soil[i].depth - soil[i-1].depth,
-                soil[i-1].Ka * (soil[i-1].unit_weight * last_height + ex_load) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
-                soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
-            );
-            a_p_soil_arr.push(active_p_para);
-        };       
-    };
+            if(i == 0)
+            {
+                var active_p_para = new a_p_pressure(
+                    0,
+                    soil[i].depth,
+                    0,
+                    soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load - soil[i].depth) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka)
+                );
+                a_p_soil_arr.push(active_p_para);
+            }else if(i == (soil.length-1) || soil[i].depth >= RW_height)
+            {
+                var active_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    RW_height - soil[i-1].depth,
+                    soil[i-1].Ka * (soil[i-1].unit_weight * soil[i-1].depth + ex_load -soil[i-1].depth) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                    soil[i].Ka * (soil[i].unit_weight * RW_height + ex_load - RW_height) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+                );
+                a_p_soil_arr.push(active_p_para);
 
-    // 地下水位面土壤層
-    if(last_soil_above_G_W_T = 0)
-    {
-        
+                i = soil.length;
+            }else
+            {
+                var active_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    soil[i].depth - soil[i-1].depth,
+                    soil[i-1].Ka * (soil[i-1].unit_weight * soil[i-1].depth + ex_load -soil[i-1].depth) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                    soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load - soil[i].depth) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+                );
+                a_p_soil_arr.push(active_p_para);
+            };       
+        }
     }else
     {
+        // 地下水位面以上
+        for(var i = 0;i < last_soil_above_G_W_T; i++)
+        {   
+            if(i == 0)
+            {
+                var active_p_para = new a_p_pressure(
+                    0,
+                    soil[i].depth,
+                    0,
+                    soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka)
+                );
+                a_p_soil_arr.push(active_p_para);
+            }else
+            {
+                var active_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    soil[i].depth - soil[i-1].depth,
+                    soil[i-1].Ka * (soil[i-1].unit_weight * soil[i-1].depth + ex_load) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                    soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+                );
+                a_p_soil_arr.push(active_p_para);
+            };       
+        };
 
+        // 地下水位面土壤層
+        // l_i 替代 last_soil_above_G_W_T
+        let l_i = last_soil_above_G_W_T
+
+        var active_p_para = new a_p_pressure(
+            soil[l_i-1].depth,
+            G_W_T - soil[l_i-1].depth,
+            soil[l_i-1].Ka * (soil[l_i-1].unit_weight * soil[l_i-1].depth + ex_load) - 2 * soil[l_i-1].C_value * Math.sqrt(soil[l_i-1].Ka),
+            soil[l_i].Ka * (soil[l_i].unit_weight * G_W_T + ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+        );
+        a_p_soil_arr.push(active_p_para);
+
+        var active_p_para = new a_p_pressure(
+            G_W_T,
+            soil[l_i].depth - G_W_T,
+            soil[l_i].Ka * (soil[l_i].unit_weight * G_W_T + ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+            soil[l_i].Ka * (soil[l_i].unit_weight * soil[l_i].depth + ex_load - soil[l_i].depth + G_W_T ) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+        );
+        a_p_soil_arr.push(active_p_para);
+
+        //地下水位面層以下
+        for(var i = last_soil_above_G_W_T + 1; i < soil.length; i++)
+        {
+            if((i == soil.length - 1) || (soil[i].depth >= RW_height))
+            {
+                var active_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    RW_height - soil[i-1].depth,
+                    soil[i-1].Ka * (soil[i-1].unit_weight * soil[i-1].depth + ex_load - soil[i-1].depth + G_W_T) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                    soil[i].Ka * (soil[i].unit_weight * RW_height + ex_load - RW_height + G_W_T) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+                );
+                a_p_soil_arr.push(active_p_para);
+
+                i = soil.length;
+            }else{
+                var active_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    soil[i].depth - soil[i-1].depth,
+                    soil[i-1].Ka * (soil[i-1].unit_weight * soil[i-1].depth + ex_load - soil[i-1].depth + G_W_T) - 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Ka),
+                    soil[i].Ka * (soil[i].unit_weight * soil[i].depth + ex_load - soil[i].depth + G_W_T) - 2 * soil[i].C_value * Math.sqrt(soil[i].Ka),
+                );
+                a_p_soil_arr.push(active_p_para);
+            }
+        }
     }
 
+    var Fa = 0;
+    var La = 0;
+    var La_cal = 0;
+
+
+    for(var i = 0; i < a_p_soil_arr.length; i++)
+    {
+        Fa = Fa + a_p_soil_arr[i].Pa;
+
+        if(i == a_p_soil_arr.length-1)
+        {
+            La_cal = La_cal + a_p_soil_arr[i].centroid_posi * a_p_soil_arr[i].Pa;
+            La = La_cal/Fa;
+        }else
+        {
+            La_cal = La_cal + a_p_soil_arr[i].centroid_posi * a_p_soil_arr[i].Pa;
+        }
+    }
+
+    La = La - last_support;
+
+    if(Fa*La<0)
+    {
+        return 0;
+    }else
+    {
+        return Fa*La;
+    }    
 }
 
+function passive_earth_pressure(RW_height){
+    
+    p_p_soil_arr = [];
+    var excavation_soil_level = soil.findIndex(value => value.depth > excavation_depth);
 
+    if(excavation_soil_level == soil.length)
+    {
+        var passive_p_para = new a_p_pressure(
+            excavation_depth,
+            RW_height - excavation_depth,
+            soil[excavation_soil_level].Kp * (soil[excavation_soil_level].unit_weight * excavation_depth + ex_load) + 2 * soil[excavation_soil_level].C_value * Math.sqrt(soil[excavation_soil_level].Kp),
+            soil[excavation_soil_level].Kp * (soil[excavation_soil_level].unit_weight * RW_height + ex_load - RW_height + excavation_depth) + 2 * soil[excavation_soil_level].C_value * Math.sqrt(soil[excavation_soil_level].Kp),
+        );
+        p_p_soil_arr.push(passive_p_para);
+    }
+    else
+    {   
+        for(var i = excavation_soil_level; i < soil.length; i++)
+        {
+            if(i == excavation_soil_level)
+            {
+                var passive_p_para = new a_p_pressure(
+                    excavation_depth,
+                    soil[excavation_soil_level].depth - excavation_depth,
+                    soil[excavation_soil_level].Kp * (soil[excavation_soil_level].unit_weight * excavation_depth + ex_load) + 2 * soil[excavation_soil_level].C_value * Math.sqrt(soil[excavation_soil_level].Kp),
+                    soil[excavation_soil_level].Kp * (soil[excavation_soil_level].unit_weight * soil[excavation_soil_level].depth + ex_load - soil[excavation_soil_level].depth + excavation_depth) + 2 * soil[excavation_soil_level].C_value * Math.sqrt(soil[excavation_soil_level].Kp),
+                );
+                p_p_soil_arr.push(passive_p_para);
+            }
+            else if(i == soil.length-1 || soil[i].depth >= RW_height)
+            {
+                var passive_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    RW_height - soil[i-1].depth,
+                    soil[i-1].Kp * (soil[i-1].unit_weight * soil[i-1].depth + ex_load - soil[i-1].depth + excavation_depth) + 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Kp),
+                    soil[i].Kp * (soil[i].unit_weight * RW_height + ex_load - RW_height + excavation_depth) + 2 * soil[i].C_value * Math.sqrt(soil[i].Kp),
+                );
+                p_p_soil_arr.push(passive_p_para);
 
+                i = soil.length;
+            }else{
+                var passive_p_para = new a_p_pressure(
+                    soil[i-1].depth,
+                    soil[i].depth - soil[i-1].depth,
+                    soil[i-1].Kp * (soil[i-1].unit_weight * soil[i-1].depth + ex_load - soil[i-1].depth + excavation_depth) + 2 * soil[i-1].C_value * Math.sqrt(soil[i-1].Kp),
+                    soil[i].Kp * (soil[i].unit_weight * soil[i].depth + ex_load - soil[i].depth + excavation_depth) + 2 * soil[i].C_value * Math.sqrt(soil[i].Kp),
+                );
+                p_p_soil_arr.push(passive_p_para);
+            }       
+        }
+    }
+
+    var Fp = 0;
+    var Lp_cal = 0;
+    var Lp = 0;
+
+    for(var i=0 ; i < p_p_soil_arr.length; i++)
+    {
+        Fp = Fp + p_p_soil_arr[i].Pa;
+
+        if(i == p_p_soil_arr.length-1)
+        {
+            Lp_cal = Lp_cal + p_p_soil_arr[i].centroid_posi * p_p_soil_arr[i].Pa;
+            Lp = Lp_cal/Fp;
+        }else
+        {
+            Lp_cal = Lp_cal + p_p_soil_arr[i].centroid_posi * p_p_soil_arr[i].Pa;
+        }
+    }
+
+    Lp = Lp - last_support;
+
+    return Fp*Lp;
+}
+
+function Internal_squeeze_inspection()
+{
+    var failurer = 0;
+    var success = 0;
+    var RW_WALL_Height = 1.7*excavation_depth;
+
+// 進度到這 檢驗內外計算的值是否正確 應該不太可能連續壁小於 0 也可以過
+
+    do
+    {
+        console.log(passive_earth_pressure(RW_WALL_Height));
+        console.log(active_earth_pressure(RW_WALL_Height));
+        console.log(RW_WALL_Height);
+        
+        if(active_earth_pressure(RW_WALL_Height) == 0)
+        {
+            success = 1;
+            failurer = 1;
+        }
+
+        if(passive_earth_pressure(RW_WALL_Height)>=active_earth_pressure(RW_WALL_Height))
+        {
+            RW_WALL_Height = RW_WALL_Height - 0.5;
+            success = 1;
+        }else
+        {   
+            RW_WALL_Height = RW_WALL_Height + 0.5;
+            failurer = 1; 
+        }
+
+    }while( success == 0 || failurer == 0);
+
+    document.getElementById("squeeze").innerHTML = RW_WALL_Height;
+}
 
 
 
