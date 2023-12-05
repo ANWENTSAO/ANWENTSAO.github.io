@@ -54,6 +54,13 @@ class a_p_pressure{
     }
 }
 
+class exca_steps{
+    constructor(step,step_depth){
+        this.step = step;
+        this.step_depth = step_depth;
+    }
+}
+
 // G_W_T for ground_water_table
 var Theta,Alpha,last_support,excavation_depth,G_W_T;
 
@@ -131,6 +138,84 @@ var bugle_arr = [];
 
 // 要拿掉 測試用
 ex_load = 1.5;
+
+// 輸入開挖層數
+const exca_steps_input = document.getElementById("exca_steps_input");
+for(var i=0;i<21;i++)
+{
+    var option = document.createElement("option");
+    option.textContent =  i;
+    exca_steps_input.appendChild(option);
+}
+
+var steps_arr = [];
+
+exca_steps_input.addEventListener("change",function(){
+    var exca_table = document.getElementById("exca_step_table");
+    
+    // 先清空所有子元素
+    while (exca_table.firstChild) {
+        exca_table.removeChild(exca_table.firstChild);
+    }
+    
+    var select_value = Number(exca_steps_input.options[exca_steps_input.selectedIndex].text);
+    var tr_th = document.createElement("tr");
+    exca_table.appendChild(tr_th);
+
+    th = document.createElement("th");
+    th.textContent = "開挖階段";
+    tr_th.appendChild(th);
+    
+    for(var i=0;i<select_value;i++)
+    {
+        th = document.createElement("th");
+        th.textContent = i+1;
+        tr_th.appendChild(th);
+    }
+
+    var tr_td = document.createElement("tr");
+    exca_table.appendChild(tr_td);
+
+    td = document.createElement("td");
+    td.textContent = "深度";
+    tr_td.appendChild(td);
+
+    for(var i=0;i<select_value;i++)
+    {   
+        td = document.createElement("td");
+        tr_td.appendChild(td);
+
+        // 取得select值
+        // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event
+        input_steps = document.createElement("input");
+        input_steps.id = i+1;
+        input_steps.addEventListener("change",function(event){
+            if(isNaN(event.target.value)){
+                window.alert("開挖階段請輸入深度!!");                
+            }else{
+                if(steps_arr.length > Number(event.target.id)-1)
+                {
+                    steps_arr[Number(event.target.id)-1].step = Number(event.target.id),
+                    steps_arr[Number(event.target.id)-1].step_depth = Number(event.target.value)
+                }else{
+                    var new_step_data = new exca_steps(
+                        Number(event.target.id),
+                        Number(event.target.value)
+                    );
+                    steps_arr.push(new_step_data);
+                }
+            }
+            console.log(steps_arr);
+        });
+        td.appendChild(input_steps);
+    }
+})
+
+
+
+
+
+
 
 //隆起 function (bulge inspection function)
 
@@ -547,9 +632,8 @@ function Internal_squeeze_inspection()
     document.getElementById("squeeze").innerHTML = RW_WALL_Height;
 }
 
-
-
 //砂湧 function (Shayong inspection function)
+
 
 
 
