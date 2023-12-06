@@ -11,6 +11,9 @@
 
     <p>輸入基本參數</p>    
 
+    <input id="add_basic_parameter" class="button" type="button" value="存入" onclick="add_basic_parameter()"/>
+    <input id="rewrite_basic_parameter" class="button" type="button" value="修改" onclick="rewrite_basic_parameter()">
+
     <table>
         <tr>
             <th>θ</th>
@@ -25,8 +28,6 @@
             <td><input id="G_W_T"></td>
             <td><input id="last_support"></td>
             <td><input id="excavation_depth"></td>
-            <td><input id="add_basic_parameter" class="button" type="button" value="存入" onclick="add_basic_parameter()"/></td>
-            <td><input id="rewrite_basic_parameter" class="button" type="button" value="修改" onclick="rewrite_basic_parameter()"></td>
         </tr>
     </table>
 
@@ -51,31 +52,49 @@
             <td><input id="C_value"/></td>
             <td><input id="phi_value"/></td>
             <td><input id="Su_value"/></td>
-
-            <td><input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/></td>
-            <!-- 測試 是否成功存入用 -->
-            <td><input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/></td>
         </tr>
     </table>
-
+    <input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/>
+    <!-- 測試 是否成功存入用 -->
+    <input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/>
+    
     <table id="Layers"></table>
+    
     
     <!-- 開挖階段輸入 -->
     <p>選擇開挖階段數<select id="exca_steps_input"></select></p>
     <table id="exca_step_table"></table>
+    
+        
+
+    <!-- 12/06 上舉檢核-->
+    <p>上舉檢核<input id="up_for_button" class="button" type="button" value="檢核"></p>
+    <table id="up_for_inspection"></table>
+
+
+
+
+
+
+
+
+
+
+    
+
 
     <p>最小容許連續壁深度</p>
     <p>隆起</p>
     
     <!-- 之後下面這要刪掉 跟上方輸入參數 按鈕 合併 同時顯示 -->
     <table>
-        <td><input id="bulge_inspection" class="button" type="button" value="查看(隆起)" onclick="bugle_inspection()"/></td>
+        <input id="bulge_inspection" class="button" type="button" value="查看(隆起)" onclick="bugle_inspection()"/>
         <td><p id="bulge"></p></td>
     </table> 
 
     <!-- 下面要改掉 -->
     <table>   
-        <td><input id="Internal_squeeze" class="button" type="button" value="查看(內擠)" onclick="Internal_squeeze_inspection()"/></td>
+        <input id="Internal_squeeze" class="button" type="button" value="查看(內擠)" onclick="Internal_squeeze_inspection()"/>
         <td><p id="squeeze"></p></td>
     </table>
 

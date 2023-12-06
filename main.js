@@ -149,6 +149,7 @@ for(var i=0;i<21;i++)
 }
 
 var steps_arr = [];
+var selected_value;
 
 exca_steps_input.addEventListener("change",function(){
     var exca_table = document.getElementById("exca_step_table");
@@ -159,6 +160,8 @@ exca_steps_input.addEventListener("change",function(){
     }
     
     var select_value = Number(exca_steps_input.options[exca_steps_input.selectedIndex].text);
+    selected_value = select_value;
+    
     var tr_th = document.createElement("tr");
     exca_table.appendChild(tr_th);
 
@@ -210,11 +213,6 @@ exca_steps_input.addEventListener("change",function(){
         td.appendChild(input_steps);
     }
 })
-
-
-
-
-
 
 
 //隆起 function (bulge inspection function)
@@ -639,6 +637,63 @@ function Internal_squeeze_inspection()
 
 // 上舉 function (Up for inspection function)
 
+const up_for = document.getElementById("up_for_button");
+
+up_for.addEventListener("click",function(){
+    var up_for_table = document.getElementById("up_for_inspection") ;
+
+    while(up_for_table.firstChild){
+        up_for_table.removeChild(up_for_table.firstChild);
+    }
+    
+    if(steps_arr.length < selected_value)
+    {
+        window.alert('請先輸入完開挖各階段深度');
+    }else
+    {
+        var tr_1 = document.createElement("tr");
+        up_for_table.appendChild(tr_1);
+
+        for(var i=0;i<selected_value+2;i++)
+        {   
+            if(i<2)
+            {
+                th = document.createElement("th");
+                tr_1.appendChild(th);
+            }else
+            {
+                th = document.createElement("th");
+                th.textContent = i-1;
+                tr_1.appendChild(th);
+            }
+        }
+        
+        var tr_2 = document.createElement("tr");
+        up_for_table.appendChild(tr_2);
+
+        for(var i=0;i<selected_value+2;i++)
+        {   
+            if(i==0)
+            {
+                th = document.createElement("th");
+                th.textContent = "土壤編號";
+                tr_2.appendChild(th);
+            }else if(i==1)
+            {
+                th = document.createElement("th");
+                th.textContent = "深度 (m)";
+                tr_2.appendChild(th);
+            }      
+            else
+            {  
+                th = document.createElement("th");
+                th.textContent = steps_arr[i-2].step_depth;
+                tr_2.appendChild(th);
+                
+            }
+        }
+    }
+})
 
 
 // function 順序  隆起 砂湧 內擠 (上舉放額外(最後))

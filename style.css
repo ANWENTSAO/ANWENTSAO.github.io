@@ -24,9 +24,15 @@ input{
     border: 1px solid white;
 }
 
+p{
+    margin: auto;
+}
+
 .button{
+    width: auto;
     background-color: gainsboro;
-    border: 0px;
+    border: 1px solid black;
+    margin: 10px 0px 10px 0px ;
 }
 
 td,th{
