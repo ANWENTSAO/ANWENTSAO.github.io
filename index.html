@@ -31,34 +31,16 @@
         </tr>
     </table>
 
+    <p>選擇土壤層數<select id="soil_layer_input"></select></p>
     <p>輸入各層土壤參數</p>
 
-    <table>
-        <tr>
-            <th>土層分類</th>
-            <th>底部深度(m)</th>
-            <th>土壤單位重(tf/m)</th>
-            <th>平均N值</th>
-            <th>C</th>
-            <!-- phi -->
-            <th>&#981;</th>
-            <th>Su</th>
-        </tr>
-        <tr>
-            <td><input id="soil_classification"/></td>
-            <td><input id="depth"/></td>
-            <td><input id="unit_weight"/></td>
-            <td><input id="N_value"/></td>
-            <td><input id="C_value"/></td>
-            <td><input id="phi_value"/></td>
-            <td><input id="Su_value"/></td>
-        </tr>
-    </table>
-    <input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/>
+    <table id="soil_layer_table"></table>
+
+    <!-- <input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/> -->
     <!-- 測試 是否成功存入用 -->
-    <input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/>
+    <!-- <input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/> -->
     
-    <table id="Layers"></table>
+    <!-- <table id="Layers"></table> -->
     
     
     <!-- 開挖階段輸入 -->

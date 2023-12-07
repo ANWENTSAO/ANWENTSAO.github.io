@@ -23,7 +23,33 @@ class class_soil{
                     ((1-Math.sqrt(Math.sin((phi+phi/2)/180*Math.PI)*Math.sin((phi+Alpha_cl)/180*Math.PI)
                     /(Math.cos((Theta_cl-phi/2)/180*Math.PI)*Math.cos((Theta_cl-Alpha_cl)/180*Math.PI))))**2)),-2);
         this.Ko = Math.round(1-Math.sin(phi/180*Math.PI),-2);
-        if(clay_arr.includes(soil_classification.substr(0,2))||clay_arr.includes(soil_classification)){
+        if(clay_arr.includes(soil_classification.substring(0,2))||clay_arr.includes(soil_classification)){
+            this.Kh = 1000*Su;
+        }else{
+            this.Kh = 70*N_value;
+        }         
+    }
+
+    recall(){
+        console.log("aaa");
+        var soil_classification = this.soil_classification;
+        var N_value = this.N_value;
+        var Theta_cl = this.Theta_cl;
+        var Alpha_cl = this.Alpha_cl;
+        var phi = this.phi;
+        var Su = this.Su;
+        this.Ka = Math.round(Math.cos((phi-Theta_cl)/180*Math.PI)**2
+                /(Math.cos(Theta_cl/180*Math.PI)**2*
+                  Math.cos((Theta_cl+phi/2)/180*Math.PI)*
+                  ((1+Math.sqrt(Math.sin((phi+phi/2)/180*Math.PI)*Math.sin((phi-Alpha_cl)/180*Math.PI)
+                  /(Math.cos((phi/2+Theta_cl)/180*Math.PI)*Math.cos((Theta_cl-Alpha_cl)/180*Math.PI))))**2))*100)/100;
+        this.Kp = Math.round(Math.cos((phi+Theta_cl)/180*Math.PI)**2
+                    /(Math.cos(Theta_cl/180*Math.PI)**2*
+                    Math.cos((Theta_cl-phi/2)/180*Math.PI)*
+                    ((1-Math.sqrt(Math.sin((phi+phi/2)/180*Math.PI)*Math.sin((phi+Alpha_cl)/180*Math.PI)
+                    /(Math.cos((Theta_cl-phi/2)/180*Math.PI)*Math.cos((Theta_cl-Alpha_cl)/180*Math.PI))))**2)),-2);
+        this.Ko = Math.round(1-Math.sin(phi/180*Math.PI),-2);
+        if(clay_arr.includes(soil_classification.substring(0,2))||clay_arr.includes(soil_classification)){
             this.Kh = 1000*Su;
         }else{
             this.Kh = 70*N_value;
@@ -95,43 +121,99 @@ function rewrite_basic_parameter(){
     document.getElementById("excavation_depth").readOnly = false;
 }
 
-function add_soil_horizon(){
-    var soil_horizon = new class_soil(
-        document.getElementById("soil_classification").value,
-        Number(document.getElementById("depth").value),
-        Number(document.getElementById("unit_weight").value),
-        Number(document.getElementById("N_value").value),
-        Number(document.getElementById("C_value").value),
-        Number(Theta),Number(Alpha),
-        Number(document.getElementById("phi_value").value),
-        Number(document.getElementById("Su_value").value)
-        );
+// function add_soil_horizon(){
+//     var soil_horizon = new class_soil(
+//         document.getElementById("soil_classification").value,
+//         Number(document.getElementById("depth").value),
+//         Number(document.getElementById("unit_weight").value),
+//         Number(document.getElementById("N_value").value),
+//         Number(document.getElementById("C_value").value),
+//         Number(Theta),Number(Alpha),
+//         Number(document.getElementById("phi_value").value),
+//         Number(document.getElementById("Su_value").value)
+//         );
     
-    soil.push(soil_horizon);
+//     soil.push(soil_horizon);
 
-    document.getElementById("soil_classification").value = "";
-    document.getElementById("depth").value ="";
-    document.getElementById("unit_weight").value = "";
-    document.getElementById("N_value").value = "";
-    document.getElementById("C_value").value = "";
-    document.getElementById("phi_value").value = "";
-    document.getElementById("Su_value").value = "";
+//     document.getElementById("soil_classification").value = "";
+//     document.getElementById("depth").value ="";
+//     document.getElementById("unit_weight").value = "";
+//     document.getElementById("N_value").value = "";
+//     document.getElementById("C_value").value = "";
+//     document.getElementById("phi_value").value = "";
+//     document.getElementById("Su_value").value = "";
+// }
+
+// function view_Layers(){
+//     var table_id_Layers = document.getElementById("Layers");
+//     table_id_Layers.innerHTML="<tr><th>土層分類</th><th>深度(m)</th><th>土壤單位重(tf/m)</th><th>平均N值</th><th>C</th><th>&#981;</th><th>Su</th><th>Ka</th><th>Kp</th><th>Ko</th><th>Kh</th></tr>"
+//     for( var i=0; i<soil.length; i++){
+//         var tr = document.createElement("tr");
+//         table_id_Layers.appendChild(tr);
+//         for( var j=0; j<list_of_class.length; j++){
+//             add_value = document.createElement("td");
+//             add_value.textContent = soil[i][list_of_class[j]];
+//             tr.appendChild(add_value);
+//         }
+//     }
+// }
+
+
+
+// 輸入土層參數 (新)
+const soil_layer_input = document.getElementById("soil_layer_input");
+for(var i=0;i<21;i++)
+{
+    var option = document.createElement("option");
+    option.textContent =  i;
+    soil_layer_input.appendChild(option);
 }
 
-function view_Layers(){
-    var table_id_Layers = document.getElementById("Layers");
-    table_id_Layers.innerHTML="<tr><th>土層分類</th><th>深度(m)</th><th>土壤單位重(tf/m)</th><th>平均N值</th><th>C</th><th>&#981;</th><th>Su</th><th>Ka</th><th>Kp</th><th>Ko</th><th>Kh</th></tr>"
-    for( var i=0; i<soil.length; i++){
-        var tr = document.createElement("tr");
-        table_id_Layers.appendChild(tr);
-        for( var j=0; j<list_of_class.length; j++){
-            add_value = document.createElement("td");
-            add_value.textContent = soil[i][list_of_class[j]];
-            tr.appendChild(add_value);
+soil_layer_input.addEventListener("change",function(){
+    var soil_table = document.getElementById("soil_layer_table");
+    // while(soil_table.firstChild){
+    //     soil_table.removeChild(this.firstChild);
+    // }
+    soil_table.innerHTML = '';
+    
+    tr_first = document.createElement("tr");
+    tr_first.innerHTML = "<th>土層分類</th><th>底部深度(m)</th><th>土壤單位重(tf/m)</th><th>平均N值</th><th>C</th><th>&#981;</th><th>Su</th>";
+    soil_table.appendChild(tr_first);
+    
+    var select_value = Number(soil_layer_input.options[soil_layer_input.selectedIndex].text);
+    
+    for(var i=0;i<select_value;i++)
+    {
+        tr = document.createElement("tr");
+        soil_table.appendChild(tr);
+
+        var soil_horizon = new class_soil(
+            "NA",0,0,0,0,0,0,0,0
+        );
+        soil.push(soil_horizon);
+        
+        for(var j=0;j<7;j++)
+        {   
+            td = document.createElement("td");
+            tr.appendChild(td);
+
+            input_soil = document.createElement("input");
+            input_soil.class = i;
+            input_soil.id = list_of_class[j] + j;
+            input_soil.addEventListener("change",function(event){
+                if(isNaN(event.target.value))
+                {
+                    eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = \"" + event.target.value + "\"" );
+                }else{
+                    eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = " + event.target.value );
+                }
+                soil[event.target.class].recall();
+                console.log(soil[event.target.class]);
+            });
+            td.appendChild(input_soil);
         }
     }
-}
-
+})
 
 var bugle_arr = [];
 
@@ -208,7 +290,6 @@ exca_steps_input.addEventListener("change",function(){
                     steps_arr.push(new_step_data);
                 }
             }
-            console.log(steps_arr);
         });
         td.appendChild(input_steps);
     }
@@ -681,7 +762,7 @@ up_for.addEventListener("click",function(){
             }else if(i==1)
             {
                 th = document.createElement("th");
-                th.textContent = "深度 (m)";
+                th.textContent = "深度(m)";
                 tr_2.appendChild(th);
             }      
             else
