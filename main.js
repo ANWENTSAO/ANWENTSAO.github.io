@@ -2,7 +2,7 @@
 var clay_arr = ['CL','ML']
 
 class class_soil{
-    constructor(soil_classification, depth, unit_weight, N_value, C_value, Theta_cl, Alpha_cl, phi, Su, Ka, Kp, Ko, Kh){
+    constructor(soil_classification, depth, unit_weight, N_value, C_value, Theta_cl, Alpha_cl, phi, Su, drain_or_not, Ka, Kp, Ko, Kh){
         this.soil_classification = soil_classification;
         this.depth = depth;
         this.unit_weight = unit_weight;
@@ -12,6 +12,7 @@ class class_soil{
         this.Alpha_cl =Alpha_cl;
         this.phi = phi;
         this.Su = Su;
+        this.drain_or_not = drain_or_not;
         this.Ka = Math.round(Math.cos((phi-Theta_cl)/180*Math.PI)**2
                     /(Math.cos(Theta_cl/180*Math.PI)**2*
                       Math.cos((Theta_cl+phi/2)/180*Math.PI)*
@@ -31,13 +32,13 @@ class class_soil{
     }
 
     recall(){
-        console.log("aaa");
         var soil_classification = this.soil_classification;
         var N_value = this.N_value;
         var Theta_cl = this.Theta_cl;
         var Alpha_cl = this.Alpha_cl;
         var phi = this.phi;
         var Su = this.Su;
+        var drain_or_not = this.drain_or_not;
         this.Ka = Math.round(Math.cos((phi-Theta_cl)/180*Math.PI)**2
                 /(Math.cos(Theta_cl/180*Math.PI)**2*
                   Math.cos((Theta_cl+phi/2)/180*Math.PI)*
@@ -94,7 +95,7 @@ var Theta,Alpha,last_support,excavation_depth,G_W_T;
 var soil = [];
 
 // class的全部屬性
-var list_of_class = ["soil_classification", "depth", "unit_weight", "N_value", "C_value", "phi", "Su", "Ka", "Kp", "Ko", "Kh"];
+var list_of_class = ["soil_classification", "depth", "unit_weight", "N_value", "C_value", "phi", "Su", "drain_or_not", "Ka", "Kp", "Ko", "Kh"];
 var add_value;
 
 function add_basic_parameter(){
@@ -177,7 +178,7 @@ soil_layer_input.addEventListener("change",function(){
     soil_table.innerHTML = '';
     
     tr_first = document.createElement("tr");
-    tr_first.innerHTML = "<th>土層分類</th><th>底部深度(m)</th><th>土壤單位重(tf/m)</th><th>平均N值</th><th>C</th><th>&#981;</th><th>Su</th>";
+    tr_first.innerHTML = "<th>土層分類</th><th>底部深度(m)</th><th>土壤單位重(tf/m)</th><th>平均N值</th><th>C</th><th>&#981;</th><th>Su</th><th>透水(U/D)</th>";
     soil_table.appendChild(tr_first);
     
     var select_value = Number(soil_layer_input.options[soil_layer_input.selectedIndex].text);
@@ -188,29 +189,50 @@ soil_layer_input.addEventListener("change",function(){
         soil_table.appendChild(tr);
 
         var soil_horizon = new class_soil(
-            "NA",0,0,0,0,0,0,0,0
+            "NA",0,0,0,0,0,0,0,0,"drain"
         );
         soil.push(soil_horizon);
         
-        for(var j=0;j<7;j++)
+        for(var j=0;j<8;j++)
         {   
             td = document.createElement("td");
             tr.appendChild(td);
+            
+            if(j==7)
+            {
+                select = document.createElement("select");
+                select.class = i;
+                select.id = list_of_class[j] + j;
 
-            input_soil = document.createElement("input");
-            input_soil.class = i;
-            input_soil.id = list_of_class[j] + j;
-            input_soil.addEventListener("change",function(event){
-                if(isNaN(event.target.value))
-                {
+                select_drain = document.createElement("option");
+                select_drain.textContent = "D";
+                select.appendChild(select_drain);
+
+                select_undrain = document.createElement("option");
+                select_undrain.textContent = "U";
+                select.appendChild(select_undrain);
+
+                select.addEventListener("change",function(event){
                     eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = \"" + event.target.value + "\"" );
-                }else{
-                    eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = " + event.target.value );
-                }
-                soil[event.target.class].recall();
-                console.log(soil[event.target.class]);
-            });
-            td.appendChild(input_soil);
+                    soil[event.target.class].recall();
+                });
+                td.appendChild(select);
+            }
+            else{
+                input_soil = document.createElement("input");
+                input_soil.class = i;
+                input_soil.id = list_of_class[j] + j;
+                input_soil.addEventListener("change",function(event){
+                    if(isNaN(event.target.value))
+                    {
+                        eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = \"" + event.target.value + "\"" );
+                    }else{
+                        eval("soil[" + event.target.class + "]." + event.target.id.substring(0,(event.target.id.length - 1)) + " = " + event.target.value );
+                    }
+                    soil[event.target.class].recall();
+                });
+                td.appendChild(input_soil);
+            }
         }
     }
 })
@@ -721,8 +743,8 @@ function Internal_squeeze_inspection()
 const up_for = document.getElementById("up_for_button");
 
 up_for.addEventListener("click",function(){
-    var up_for_table = document.getElementById("up_for_inspection") ;
-
+    var up_for_table = document.getElementById("up_for_max_pressure") ;
+    
     while(up_for_table.firstChild){
         up_for_table.removeChild(up_for_table.firstChild);
     }
@@ -772,6 +794,59 @@ up_for.addEventListener("click",function(){
                 tr_2.appendChild(th);
                 
             }
+        }
+
+        var Undrained_layer = [];
+        for(var i=0;i<soil.length;i++)
+        {
+            if(soil[i].drain_or_not == "U")
+            {
+                Undrained_layer.push(i);
+            }
+        }
+
+        for(var i=0;i<soil.length;i++)
+        {
+            tr_soil = document.createElement("tr");
+            up_for_table.appendChild(tr_soil);
+
+            for(var j=0;j<selected_value+2;j++)
+            {
+                if(j==0)
+                {
+                    th = document.createElement("th");
+                    th.textContent = i+1;
+                    tr_soil.appendChild(th);
+                }else if(j==1)
+                {
+                    th = document.createElement("th");
+                    th.textContent = soil[i].depth;
+                    tr_soil.appendChild(th);
+                }else
+                {   
+                    th = document.createElement("th");
+                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth))
+                    {   
+                        var max_pressure = 0;
+                        for(var k=0;k<i+1;k++)
+                        {
+                            if(k==0)
+                            {
+                                max_pressure = max_pressure + (soil[k].depth - steps_arr[j-2].step_depth) * soil[k].unit_weight;
+                            }else{
+                                max_pressure = max_pressure + (soil[k].depth - soil[k-1].depth) * soil[k].unit_weight;
+                            }
+                        }
+                        max_pressure = Math.round((max_pressure / 1.2)*100)/100;
+
+                        th.textContent = max_pressure;
+                    }else{
+                        th.textContent = "---";
+                    }                    
+                    tr_soil.appendChild(th);
+                }
+                
+            }            
         }
     }
 })
