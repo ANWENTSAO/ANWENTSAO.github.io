@@ -551,12 +551,24 @@ function active_earth_pressure(RW_height){
         // l_i 替代 last_soil_above_G_W_T
         let l_i = last_soil_above_G_W_T
 
-        var active_p_para = new a_p_pressure(
-            soil[l_i-1].depth,
-            G_W_T - soil[l_i-1].depth,
-            soil[l_i-1].Ka * (soil[l_i-1].unit_weight * soil[l_i-1].depth + ex_load) - 2 * soil[l_i-1].C_value * Math.sqrt(soil[l_i-1].Ka),
-            soil[l_i].Ka * (soil[l_i].unit_weight * G_W_T + ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
-        );
+        if(l_i == 0)
+        {
+            var active_p_para = new a_p_pressure(
+                0,
+                G_W_T,
+                soil[l_i].Ka * (ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+                soil[l_i].Ka * (soil[l_i].unit_weight * G_W_T + ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+            );
+        }else
+        {
+            var active_p_para = new a_p_pressure(
+                soil[l_i-1].depth,
+                G_W_T - soil[l_i-1].depth,
+                soil[l_i-1].Ka * (soil[l_i-1].unit_weight * soil[l_i-1].depth + ex_load) - 2 * soil[l_i-1].C_value * Math.sqrt(soil[l_i-1].Ka),
+                soil[l_i].Ka * (soil[l_i].unit_weight * G_W_T + ex_load) - 2 * soil[l_i].C_value * Math.sqrt(soil[l_i].Ka),
+            );
+        }
+        
         a_p_soil_arr.push(active_p_para);
 
         var active_p_para = new a_p_pressure(
@@ -743,6 +755,10 @@ function Internal_squeeze_inspection()
 const up_for = document.getElementById("up_for_button");
 
 up_for.addEventListener("click",function(){
+    // 最大水壓力
+    const inner_pressure = document.getElementById("max_pressure");
+
+    inner_pressure.innerHTML = "各開挖階段可容許最大水壓力";
     var up_for_table = document.getElementById("up_for_max_pressure") ;
     
     while(up_for_table.firstChild){
@@ -849,7 +865,123 @@ up_for.addEventListener("click",function(){
             }            
         }
     }
+    const inner_inspection = document.getElementById("inspection");
+    inner_inspection.innerHTML = "各開挖階段無考慮設計抽降水之安全係數";
+    
+    var up_for_inspection = document.getElementById("up_for_max_inspection");
+
+    while(up_for_inspection.firstChild){
+        up_for_inspection.removeChild(up_for_inspection.firstChild);
+    }
+
+    if(steps_arr.length < selected_value)
+    {
+        window.alert('請先輸入完開挖各階段深度');
+    }else{
+        var tr_1 = document.createElement("tr");
+        up_for_inspection.appendChild(tr_1);
+
+        for(var i=0;i<selected_value+2;i++)
+        {   
+            if(i<2)
+            {
+                th = document.createElement("th");
+                tr_1.appendChild(th);
+            }else
+            {
+                th = document.createElement("th");
+                th.textContent = i-1;
+                tr_1.appendChild(th);
+            }
+        }
+        
+        var tr_2 = document.createElement("tr");
+        up_for_inspection.appendChild(tr_2);
+
+        for(var i=0;i<selected_value+2;i++)
+        {   
+            if(i==0)
+            {
+                th = document.createElement("th");
+                th.textContent = "土壤編號";
+                tr_2.appendChild(th);
+            }else if(i==1)
+            {
+                th = document.createElement("th");
+                th.textContent = "深度(m)";
+                tr_2.appendChild(th);
+            }      
+            else
+            {  
+                th = document.createElement("th");
+                th.textContent = steps_arr[i-2].step_depth;
+                tr_2.appendChild(th);
+            }
+        }
+
+        var Undrained_layer = [];
+        for(var i=0;i<soil.length;i++)
+        {
+            if(soil[i].drain_or_not == "U")
+            {
+                Undrained_layer.push(i);
+            }
+        }
+
+        for(var i=0;i<soil.length;i++)
+        {
+            tr_soil = document.createElement("tr");
+            up_for_inspection.appendChild(tr_soil);
+
+            for(var j=0;j<selected_value+2;j++)
+            {
+                if(j==0)
+                {
+                    th = document.createElement("th");
+                    th.textContent = i+1;
+                    tr_soil.appendChild(th);
+                }else if(j==1)
+                {
+                    th = document.createElement("th");
+                    th.textContent = soil[i].depth;
+                    tr_soil.appendChild(th);
+                }else
+                {   
+                    th = document.createElement("th");
+                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth))
+                    {   
+                        var inspection = 0;
+                        for(var k=0;k<i+1;k++)
+                        {
+                            if(k==0)
+                            {
+                                inspection = inspection + (soil[k].depth - steps_arr[j-2].step_depth) * soil[k].unit_weight;
+                            }else{
+                                inspection = inspection + (soil[k].depth - soil[k-1].depth) * soil[k].unit_weight;
+                            }
+                        }
+                        inspection = Math.round((inspection / (soil[i].depth - G_W_T))*100)/100;
+
+                        // if(inspection<1.2)
+                        // {
+                        //     th.
+                        // }
+                        
+                        th.textContent = inspection;
+                    }else{
+                        th.textContent = "---";
+                    }                    
+                    tr_soil.appendChild(th);
+                }
+                
+            }            
+        }
+    }
 })
+
+//上舉檢核
+
+
 
 
 // function 順序  隆起 砂湧 內擠 (上舉放額外(最後))
