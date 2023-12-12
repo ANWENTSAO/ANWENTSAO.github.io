@@ -58,31 +58,35 @@
     <table id="up_for_max_inspection"></table>
 
 
-    
-
-
-
-
-
-
-
-
-
-
     <p>最小容許連續壁深度</p>
     <p>隆起</p>
     
     <!-- 之後下面這要刪掉 跟上方輸入參數 按鈕 合併 同時顯示 -->
-    <table>
+    <!-- <table>
         <input id="bulge_inspection" class="button" type="button" value="查看(隆起)" onclick="bugle_inspection()"/>
         <td><p id="bulge"></p></td>
-    </table> 
+    </table>  -->
 
     <!-- 下面要改掉 -->
-    <table>   
+    <!-- <table>   
         <input id="Internal_squeeze" class="button" type="button" value="查看(內擠)" onclick="Internal_squeeze_inspection()"/>
         <td><p id="squeeze"></p></td>
-    </table>
+    </table> -->
+
+
+
+    <!-- 12/12 砂涌檢核與嘗試合併擋土壁長度檢驗 -->
+    <p>擋土壁長度建議<input id="wall_height" class="button" type="button" value="檢核"></p>
+    <table id="inspection_RW_height_table"></table>
+
+    <p>砂涌檢核 輸入擋土壁長度<input id="cal_wall_height" style="width: 100px;"></p>
+    <table id="quick_sand_table"></table>
+
+
+
+
+
+
 
     <!-- 要記得換 -->
     <script src="https://anwentsao.github.io/main.js"></script>

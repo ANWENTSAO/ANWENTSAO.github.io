@@ -468,10 +468,11 @@ function bugle_inspection(){
                 failurer = 1;
             };
         }while(breaker == 0 );
-        document.getElementById("bulge").innerHTML = RW_WALL_Height;
+        return RW_WALL_Height;
     }else{
         window.alert("各層參數中Su皆為0 , 無法提供剪力阻抗 , 請從新輸入");
-        document.getElementById("bulge").innerHTML = "請從新輸入";
+        document.getElementById("inspection_RW_height_table").innerHTML = "請從新輸入";
+        return 0;
     }
 }
 
@@ -720,9 +721,9 @@ function Internal_squeeze_inspection()
 
     do
     {
-        console.log(passive_earth_pressure(RW_WALL_Height));
-        console.log(active_earth_pressure(RW_WALL_Height));
-        console.log(RW_WALL_Height);
+        // console.log(passive_earth_pressure(RW_WALL_Height));
+        // console.log(active_earth_pressure(RW_WALL_Height));
+        // console.log(RW_WALL_Height);
         
         if(active_earth_pressure(RW_WALL_Height) == 0)
         {
@@ -740,9 +741,10 @@ function Internal_squeeze_inspection()
             failurer = 1; 
         }
 
+        console.log(RW_WALL_Height);
     }while( success == 0 || failurer == 0);
 
-    document.getElementById("squeeze").innerHTML = RW_WALL_Height;
+    return RW_WALL_Height;
 }
 
 //砂湧 function (Shayong inspection function)
@@ -979,9 +981,258 @@ up_for.addEventListener("click",function(){
     }
 })
 
-//上舉檢核
+//砂涌檢核
+
+function quick_sand(RW_height,num){
+
+    var exca_soil_level = soil.findIndex(value => value.depth > steps_arr[num].step_depth)
+
+    var gamma_sub = soil[exca_soil_level].unit_weight - 1;
+    var D = Math.round((RW_height - steps_arr[num].step_depth)*100)/100;
+    var delta_water_pressure = 0;
+    
+    if((steps_arr[num].step_depth - G_W_T) <= 0)
+    {
+        gamma_sub = -1;
+    }else{
+        delta_water_pressure = steps_arr[num].step_depth - G_W_T;
+    }
+    
+    var terzaghi = Math.round(2*gamma_sub*D/(1*delta_water_pressure)*100)/100;
+    var critical_hydraulic_gradient = Math.round(gamma_sub*(delta_water_pressure+2*D)/(1*delta_water_pressure)*100)/100;
+    
+    return [gamma_sub,D,delta_water_pressure,terzaghi,critical_hydraulic_gradient];
+}
+
+function check_last_step(){
+    
+    var RW_WALL_Height = 1.7*excavation_depth;
+    var failurer = 0;
+    var last_call = "situ_d";
+    var out = 0;
+
+    do{
+        var data_list = quick_sand(RW_WALL_Height,soil.findIndex(value => value.depth > steps_arr[steps_arr.length - 1].step_depth));
+        
+        if(data_list[3]<1.5||data_list[4]<2.0)
+        {
+            RW_WALL_Height = RW_WALL_Height + 0.5;
+            if(last_call == "a")
+            {
+                out = 1;
+            }
+        }else if(data_list[3]>=1.5 && data_list[4]>=2.0)
+        {
+            RW_WALL_Height = RW_WALL_Height -0.5;
+            last_call = "situ_a"
+        }else{
+            RW_WALL_Height = RW_WALL_Height + 0.5;
+            if(last_call == "a")
+            {
+                out = 1;
+            }
+        }
+    }while( out == 1 );
+    
+    return RW_WALL_Height;
+}
+
+const cal_wall_height = document.getElementById("cal_wall_height");
+
+cal_wall_height.addEventListener("change",function(event){
+    var rw_height = event.target.value;
+    var gamma_sub_arr = [];
+    var D_arr =[];
+    var delta_water_pressure_arr =[];
+    var terzaghi_arr = [];
+    var critical_hydraulic_gradient_arr =[];
+
+    for(var i=0;i<steps_arr.length;i++)
+    {
+        var quick_sand_data = quick_sand(rw_height,i);
+        if(quick_sand_data[0]==-1)
+        {
+            gamma_sub_arr.push("---");
+            D_arr.push("---");
+            delta_water_pressure_arr.push("---");
+            terzaghi_arr.push("---");
+            critical_hydraulic_gradient_arr.push("---");
+        }else
+        {
+            gamma_sub_arr.push(quick_sand_data[0]);
+            D_arr.push(quick_sand_data[1]);
+            delta_water_pressure_arr.push(quick_sand_data[2]);
+            terzaghi_arr.push(quick_sand_data[3]);
+            critical_hydraulic_gradient_arr.push(quick_sand_data[4]);
+        }
+    }
+
+    list_of_quick_sand = ["gamma_sub","D","水頭差","terzaghi安全係數","臨界水力坡降安全係數"];
+
+    const quick_sand_table = document.getElementById("quick_sand_table");
+
+    while (quick_sand_table.firstChild) {
+        quick_sand_table.removeChild(quick_sand_table.firstChild);
+    }
+
+    // 1
+    var tr_step_level = document.createElement("tr");
+    quick_sand_table.appendChild(tr_step_level);
+    for(var i=0;i<steps_arr.length+1;i++)
+    {   
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "開挖階段";
+        }else
+        {
+            th.textContent = i;
+        }
+        tr_step_level.appendChild(th);
+    }
+    // 2
+    var tr_step_depth = document.createElement("tr");
+    quick_sand_table.appendChild(tr_step_depth);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "開挖深度";
+        }else
+        {
+            th.textContent = steps_arr[i-1].step_depth;
+        }
+        tr_step_depth.appendChild(th);
+    }
+    // 3
+    var tr_gamma = document.createElement("tr");
+    quick_sand_table.appendChild(tr_gamma);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "gamma_sub";
+        }else
+        {
+            th.textContent = gamma_sub_arr[i-1];
+        }
+        tr_gamma.appendChild(th);
+    }
+    // 4
+    var tr_D = document.createElement("tr");
+    quick_sand_table.appendChild(tr_D);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "D";
+        }else
+        {
+            th.textContent = D_arr[i-1];
+        }
+        tr_D.appendChild(th);
+    }
+    // 5
+    var tr_delta_water_pressure = document.createElement("tr");
+    quick_sand_table.appendChild(tr_delta_water_pressure);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "水壓變化";
+        }else
+        {
+            th.textContent = delta_water_pressure_arr[i-1];
+        }
+        tr_delta_water_pressure.appendChild(th);
+    }
+    // 6
+    var tr_terzaghi = document.createElement("tr");
+    quick_sand_table.appendChild(tr_terzaghi);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "terzaghi安全係數";
+        }else
+        {
+            th.textContent = terzaghi_arr[i-1];
+        }
+        tr_terzaghi.appendChild(th);
+    }
+    // 7
+    var tr_critical_hydraulic_gradient = document.createElement("tr");
+    quick_sand_table.appendChild(tr_critical_hydraulic_gradient);
+    for(var i = 0;i<steps_arr.length+1;i++)
+    {
+        var th = document.createElement("th");
+        if(i==0){
+            th.textContent = "臨界水力坡降安全係數";
+        }else
+        {
+            th.textContent = critical_hydraulic_gradient_arr[i-1];
+        }
+        tr_critical_hydraulic_gradient.appendChild(th);
+    }
+})
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const  inspection_wall_height = document.getElementById("wall_height");
+
+inspection_wall_height.addEventListener("click",function(){
+
+    const wall_height_table = document.getElementById("inspection_RW_height_table");
+    
+    while(wall_height_table.firstChild){
+        wall_height_table.removeChild(wall_height_table.firstChild);
+    }
+
+    var list_of_inspection = ["內擠","隆起","砂涌"];
+    var list_of_data = [Internal_squeeze_inspection(),bugle_inspection(),check_last_step()];
+
+    // console.log(Internal_squeeze_inspection());
+    // console.log(bugle_inspection());
+    // console.log(check_last_step());
+
+    for(var i=0;i<list_of_inspection.length;i++)
+    {
+        var tr = document.createElement("tr");
+        wall_height_table.appendChild(tr);
+
+        var th_1 = document.createElement("th");
+        th_1.textContent = list_of_inspection[i];
+        tr.appendChild(th_1);
+
+        var th_2 = document.createElement("th");
+        th_2.textContent = list_of_data[i];
+        tr.appendChild(th_2);
+    }
+    var cal_wall_height = document.getElementById("cal_wall_height");
+    cal_wall_height.value = list_of_data[2];
+    const event = new Event("change");
+    cal_wall_height.dispatchEvent(event);
+})
 
 
 // function 順序  隆起 砂湧 內擠 (上舉放額外(最後))
