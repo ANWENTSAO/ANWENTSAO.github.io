@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./station.css" rel="stylesheet" type="text/css">
+    <title>地下車站數量檢核</title>
+</head>
+<body>
+    <a href="../index.html">連結到四大檢核</a>
+    <h1>地下車站數量檢核</h1>
+    <table>
+        <tr>
+            <th>是否為單大廳?</th>
+            <td>
+                <select id="checkbox">
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>尖峰小時(上午)進站旅客流量</th>
+            <td><input id="in_hr"></td>
+        </tr>
+        <tr>
+            <th>尖峰小時(上午)出站旅客流量</th>
+            <td><input id="out_hr"></td>
+        </tr>
+        <tr>
+            <th>尖峰分鐘(上午)進站旅客流量</th>
+            <td><input id="in_min"></td>
+        </tr>
+        <tr>
+            <th>尖峰分鐘(上午)出站旅客流量</th>
+            <td><input id="out_min"></td>
+        </tr>
+    </table>
+
+    <h1 id="result_text_tag">檢核結果</h1>
+    <table id="result_table"></table>
+
+
+
+
+
+    <script src="./station.js"></script>
+</body>
+</html>
