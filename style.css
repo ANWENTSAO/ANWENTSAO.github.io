@@ -4,6 +4,133 @@
     font-family: DFKai-sb;
 }
 
+
+
+
+
+
+*{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 20px;
+}
+
+#menu{
+    position: absolute;
+}
+
+.header{
+    height: 50px;
+    background-color: #ccc;
+    position: relative;
+}
+
+.title{
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+    font-size: 30px;
+}
+
+.menu_btn{
+    display: block;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background-color: gray;
+}
+
+.menu_btn span{
+    opacity: 0;
+}
+
+.menu_btn::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    height: 2px;
+    width: 32px;
+    background: white;
+    margin: auto;
+    box-shadow: 0px 10px 0px white,
+                0px -10px 0px white;
+}
+
+nav{
+    width: 80%;
+    height: calc(100vh - 50px);
+    background-color: grey;
+    position: absolute;
+    top: 50px;
+    left: -100%;
+    transition: .5s;
+}
+
+nav a{
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 10px 10px ;
+    border-bottom: 1px solid white; 
+}
+
+#menu:checked ~ .content .header nav{
+    left: 0;
+}
+
+.content{
+    width: 100%;
+    max-width: 2000px;
+}
+
+.text{
+    padding: 5px 2px 5px 2px;
+}
+
+@media screen and (min-width:768px){
+    /* .content{
+        display: flex;
+        flex-direction: column;
+    } */
+
+    .menu_btn{
+        display: none;
+    }
+    .header{
+        display: flex;
+        justify-content: space-between;
+    }
+    .title{
+        display: flex;
+        line-height: 50px;
+    }
+    nav{
+        display: flex;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+    }
+    nav a{
+        border-bottom: none;
+        line-height: 30px;
+    }
+}
+
+
+
+
+
+
 body{
     background-color:antiquewhite;
 }
@@ -15,6 +142,7 @@ table{
     background-color: white;
     border: 1px solid black;
     border-collapse: collapse;
+    margin: 5px 0px 5px 0px;
 }
 
 input{
@@ -32,7 +160,9 @@ p{
     width: auto;
     background-color: gainsboro;
     border: 1px solid black;
-    margin: 10px 0px 10px 0px ;
+    margin: 5px 0px 5px 8px;
+    font-size: 16px;
+    /* margin: 10px 0px 10px 0px ; */
 }
 
 td,th{

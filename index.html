@@ -7,81 +7,93 @@
     <title>四項檢核</title>
 </head>
 <body>
-    <a href="./station/station.html">連結到地下車站數量檢核</a>
-    <h1>深開挖檢核</h1>
+    <input type="checkbox" id="menu">
 
-    <p>輸入基本參數</p>    
+    <div class="content">
+        <div class="header">
+            <div class="title">深開挖四大檢核計算</div>
+            <label for="menu" class="menu_btn">
+                <span>選單</span>
+            </label>
+            <nav>
+                <a href="./station/station.html">地下車站數量檢核</a>
+                <a href="./specification/specification.html">深開挖四大檢核規範</a>
+            </nav>
+        </div>        
 
-    <input id="add_basic_parameter" class="button" type="button" value="存入" onclick="add_basic_parameter()"/>
-    <input id="rewrite_basic_parameter" class="button" type="button" value="修改" onclick="rewrite_basic_parameter()">
+        <div class="text">
+            輸入基本參數
+            <input id="add_basic_parameter" class="button" type="button" value="存入" onclick="add_basic_parameter()"/>
+            <input id="rewrite_basic_parameter" class="button" type="button" value="修改" onclick="rewrite_basic_parameter()">
+        </div>  
+        <table>
+            <tr>
+                <th>θ</th>
+                <th>&#945;</th>
+                <th>地下水位面深度</th>
+                <th>最下階支撐深度</th>
+                <th>開挖深度</th>
+            </tr>
+            <tr>
+                <td><input id="Theta"></td>
+                <td><input id="Alpha"></td>
+                <td><input id="G_W_T"></td>
+                <td><input id="last_support"></td>
+                <td><input id="excavation_depth"></td>
+            </tr>
+        </table>
 
-    <table>
-        <tr>
-            <th>θ</th>
-            <th>&#945;</th>
-            <th>地下水位面深度</th>
-            <th>最下階支撐深度</th>
-            <th>開挖深度</th>
-        </tr>
-        <tr>
-            <td><input id="Theta"></td>
-            <td><input id="Alpha"></td>
-            <td><input id="G_W_T"></td>
-            <td><input id="last_support"></td>
-            <td><input id="excavation_depth"></td>
-        </tr>
-    </table>
+        <div class="text">選擇土壤層數<select id="soil_layer_input"></select></div>
+        <div class="text">輸入各層土壤參數</div>
 
-    <p>選擇土壤層數<select id="soil_layer_input"></select></p>
-    <p>輸入各層土壤參數</p>
+        <table id="soil_layer_table"></table>
 
-    <table id="soil_layer_table"></table>
-
-    <!-- <input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/> -->
-    <!-- 測試 是否成功存入用 -->
-    <!-- <input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/> -->
-    
-    <!-- <table id="Layers"></table> -->
-    
-    
-    <!-- 開挖階段輸入 -->
-    <p>選擇開挖階段數<select id="exca_steps_input"></select></p>
-    <table id="exca_step_table"></table>
-    
+        <!-- <input id="addsoilhorizon" class="button" type="button" value="存入" onclick="add_soil_horizon()"/> -->
+        <!-- 測試 是否成功存入用 -->
+        <!-- <input id="view_person" class="button" type="button" value="查看" onclick="view_Layers()"/> -->
         
+        <!-- <table id="Layers"></table> -->
+        
+        
+        <!-- 開挖階段輸入 -->
+        <div class="text">選擇開挖階段數<select id="exca_steps_input"></select></div>
+        <table id="exca_step_table"></table>
+        
+            
 
-    <!-- 12/08 上舉檢核-->
-    <p>上舉檢核<input id="up_for_button" class="button" type="button" value="檢核"></p>
-    
-    <p id="max_pressure"></p>
-    <table id="up_for_max_pressure"></table>
-    <p id="inspection"></p>
-    <table id="up_for_max_inspection"></table>
-
-
-    <p>最小容許連續壁深度</p>
-    <p>隆起</p>
-    
-    <!-- 之後下面這要刪掉 跟上方輸入參數 按鈕 合併 同時顯示 -->
-    <!-- <table>
-        <input id="bulge_inspection" class="button" type="button" value="查看(隆起)" onclick="bugle_inspection()"/>
-        <td><p id="bulge"></p></td>
-    </table>  -->
-
-    <!-- 下面要改掉 -->
-    <!-- <table>   
-        <input id="Internal_squeeze" class="button" type="button" value="查看(內擠)" onclick="Internal_squeeze_inspection()"/>
-        <td><p id="squeeze"></p></td>
-    </table> -->
+        <!-- 12/08 上舉檢核-->
+        <div class="text">上舉檢核<input id="up_for_button" class="button" type="button" value="檢核"></div>
+        
+        <p id="max_pressure"></p>
+        <table id="up_for_max_pressure"></table>
+        <p id="inspection"></p>
+        <table id="up_for_max_inspection"></table>
 
 
+        <div class="text">最小容許連續壁深度</div>
+        <div class="text">隆起</div>
+        
+        <!-- 之後下面這要刪掉 跟上方輸入參數 按鈕 合併 同時顯示 -->
+        <!-- <table>
+            <input id="bulge_inspection" class="button" type="button" value="查看(隆起)" onclick="bugle_inspection()"/>
+            <td><p id="bulge"></p></td>
+        </table>  -->
 
-    <!-- 12/12 砂涌檢核與嘗試合併擋土壁長度檢驗 -->
-    <p>擋土壁長度建議<input id="wall_height" class="button" type="button" value="檢核"></p>
-    <table id="inspection_RW_height_table"></table>
+        <!-- 下面要改掉 -->
+        <!-- <table>   
+            <input id="Internal_squeeze" class="button" type="button" value="查看(內擠)" onclick="Internal_squeeze_inspection()"/>
+            <td><p id="squeeze"></p></td>
+        </table> -->
 
-    <p>砂涌檢核 輸入擋土壁長度<input id="cal_wall_height" style="width: 100px;"></p>
-    <table id="quick_sand_table"></table>
+
+
+        <!-- 12/12 砂涌檢核與嘗試合併擋土壁長度檢驗 -->
+        <p>擋土壁長度建議<input id="wall_height" class="button" type="button" value="檢核"></p>
+        <table id="inspection_RW_height_table"></table>
+
+        <p>砂涌檢核 輸入擋土壁長度<input id="cal_wall_height" style="width: 100px;"></p>
+        <table id="quick_sand_table"></table>
+    </div>
 
 
 
