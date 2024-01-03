@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./specification.css" rel="stylesheet" type="text/css">
-    <title>四大檢核規範</title>
+    <title>規範與假設</title>
 </head>
 <body>
     
@@ -12,7 +12,7 @@
 
     <div class="content">
         <div class="header">
-            <div class="title">深開挖四大檢核規範</div>
+            <div class="title">規範與計算的假設</div>
             <label for="menu" class="menu_btn">
                 <span>選單</span>
             </label>
@@ -22,7 +22,70 @@
             </nav>
         </div>
 
-        尚未完成
+        <div class="text_body">
+            <div class="topic">擋土式開挖之穩定性</div>
+                <p>●以下內容來自於<a href="https://www.nlma.gov.tw/filesys/file/EMMA/L1120811.pdf">建築物基礎構造設計規範</a></p>
+                ●側向壓力平衡(內擠分析)
+                <div class="sec_topic">
+                    <img src="./內擠.png" alt="內擠圖片">
+                    <div class="item">
+                        <p>擋土壁應有足夠之貫入深度，使其於兩側之側向壓力作用下，具足夠之穩定性。擋土壁之貫入深度D，可依下列公式計算其安全性:<br></p>
+                        <p align=center >F<sub>P</sub>L<sub>P</sub>≧F<sub>A</sub>L<sub>A</sub><br></p>
+                        <p>F<sub>A</sub> = 最下階支撐以下之外側作用側向壓力之合力(tf/m)。計算土壓力時，強度參數必須先除以抵抗底面剪力破壞之安全係數，亦即 c / F<sub>s</sub>，tanΦ / F<sub>s</sub>。<br></p>
+                        <p>L<sub>A</sub> = F<sub>A</sub>作用點距最下階支撐之距離(m)<br></p>
+                        <p>F<sub>P</sub> = 最下階支撐以下之內側作用側向壓力之合力(tf/m)。計算土壓力時，強度參數必須先除以抵抗底面剪力破壞之安全係數，亦即 c / F<sub>s</sub>，tanΦ / F<sub>s</sub>。<br></p>
+                        <p>L<sub>P</sub> = F<sbu>P</sbu>作用點距最下階支撐之距離(m)<br></p>
+                        <p>F<sub>s</sub> = 強度安全係數，必須至少≧1.2 
+                    </div>
+                </div>
+                ●隆起檢核
+                <div class="sec_topic">
+                    <img src="./隆起.png" alt="隆起圖片">
+                    <div class="item">
+                        <p>開挖底面下方土層係厚層黏土時，應檢討其抵抗底面隆起之穩定性。可依下列公式計算其安全性:<br></p>
+                        <p><img src="./隆起公式.png" alt="隆起公式圖片" style="width: 300px; display:block; margin: auto;"></p>
+                        <p>M<sub>r</sub>＝抵抗力矩(tf-m/m)</p>
+                        <p>M<sub>d</sub>＝傾覆力矩(tf-m/m)</p>
+                        <p>S<sub>u</sub>＝黏土之不排水剪力強度(tf/m<sup>2</sup>)</p>
+                        <p>X=半徑(m)</p>
+                        <p>W=開挖底面以上，於擋土設施外側Ｘ寬度範圍內土壤重量與地表上方載重(q)之重量和(tf/m)</p>
+                    </div>
+                </div>
+                ●砂湧檢核
+                <div class="sec_topic">
+                    <img src="./砂湧.png" alt="砂湧圖片">
+                    <div class="item">
+                        <P>如擋土壁下方為透水性佳之砂質土壤，且擋土壁未貫入不透水層時，即應檢討其抵抗砂湧之安全性。分析方法可用滲流解析方式、臨界水力坡降解析方式、或以下列兩公式分別計算之，擇其中貫入深度最大者為設計依據。<br></P>
+                        <p>●Terzaghi滲流理論</p>
+                        <p><img src="./terzaghi.png" alt="Terzaghi公式圖片" style="width: 200px; display:block; margin: auto;"></p>
+                        <p>●臨界水力坡降理論</p>
+                        <p><img src="./臨界水力坡降.png" alt="臨界水力坡降圖片" style="width: 250px; display:block; margin: auto;"></p>
+                        <p>γ<sub>sub</sub> = 砂質土壤之有效單位重(tf/m<sup>3</sup>)</p>
+                        <p>D = 擋土設施之貫入深度(m)</p>
+                        <p>γ<sub>w</sub> =地下水之單位重(tf/m<sup>3</sup>)</p>
+                        <p>△H<sub>w</sub>擋土設施內外兩側地下水位之水頭差(m)</p>
+                    </div>
+                </div>
+                ●上舉檢核
+                <div class="sec_topic">
+                    <img src="./上舉.png" alt="上舉圖片">
+                    <div class="item">
+                        <p>開挖底面下方土層中，如有不透水層且承受壓力水頭者，應檢討開挖過程中此不透水層抵抗上舉破壞之安全性，可依下列公式計算：</p>
+                        <p><img src="./上舉公式.png" alt="上舉公式圖片" style="width: 180px; display:block; margin: auto;"></p>
+                        <p>γ<sub>ti</sub> = 不透水層底面以上之各土層土壤單位重(tf/m<sup>3</sup>)</p>
+                        <p>h<sub>i</sub> = 不透水層底面以上之各土層厚度(m)</p>
+                        <p>U<sub>w</sub> = 透水層頂部之水壓力(tf/m<sup>2</sup>)</p>
+                    </div>
+                </div>
+                ●我們的前提假設
+                <div class="sec_topic">
+                    <div class="item" style="width: 100%;">
+                        <p>1.因我們不確定我們的水壓隨深度變化線是否正確，故我們以保守算法斜率為1(水單位重1(𝑡𝑓/𝑚^3))的方式進行地下水壓力計算<br></p>
+                        <p>2.超負荷載重我們以簡單的方式進行計算(以無限負載方式計算)</p>
+                    </div>
+                </div>
+            <div class="topic">地下車站數量檢核</div>
+        </div>
     </div>
 </body>
 </html>

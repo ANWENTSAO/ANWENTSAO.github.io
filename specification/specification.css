@@ -78,11 +78,46 @@ nav a{
 .content{
     width: 100%;
     max-width: 2000px;
+    background: linear-gradient(to right, #aed9e0, #3097e7);
 }
 
 .text{
     padding: 5px 2px 5px 2px;
 }
+
+.sec_topic{
+    display: flex;
+    flex-direction: row;
+}
+
+img{
+    width: 400px;
+    margin: auto;
+}
+
+p{
+    margin: 4px 0px 4px 0px ;
+}
+
+.item{
+    width: 50%;
+    padding: 2px;
+}
+
+.topic{
+    font-size: 30px;
+    margin: 4px 0px 4px 0px;
+}
+
+
+
+
+
+
+
+
+
+
 
 @media screen and (min-width:768px){
     /* .content{
@@ -100,7 +135,7 @@ nav a{
     .title{
         display: flex;
         line-height: 50px;
-        margin: 0px 0px 0px 22px;
+        margin: 0px 0px 0px 0px;
     }
     nav{
         display: flex;
