@@ -86,12 +86,12 @@ nav a{
 }
 
 .sec_topic{
-    display: flex;
+    display: block;
     flex-direction: row;
 }
 
 img{
-    width: 30%;
+    width: 300px;
     margin: auto;
     min-width: 200px;
 }
@@ -101,7 +101,7 @@ p{
 }
 
 .item{
-    width: 50%;
+    width: 100%;
     margin: auto;
     padding: 2px;
 }
@@ -152,5 +152,11 @@ p{
     nav a{
         border-bottom: none;
         line-height: 30px;
+    }
+    .sec_topic{
+        display: flex;
+    }
+    .item{
+        width: 50%;
     }
 }
