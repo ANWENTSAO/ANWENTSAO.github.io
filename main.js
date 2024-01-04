@@ -843,7 +843,7 @@ up_for.addEventListener("click",function(){
                 }else
                 {   
                     th = document.createElement("th");
-                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth))
+                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth) && (soil[i].depth > G_W_T))
                     {   
                         var max_pressure = 0;
                         for(var k=0;k<i+1;k++)
@@ -950,7 +950,7 @@ up_for.addEventListener("click",function(){
                 }else
                 {   
                     th = document.createElement("th");
-                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth))
+                    if((Undrained_layer.includes(i)) && (soil[i].depth > steps_arr[j-2].step_depth) && (soil[i].depth > G_W_T))
                     {   
                         var inspection = 0;
                         for(var k=0;k<i+1;k++)
@@ -987,7 +987,7 @@ function quick_sand(RW_height,num){
 
     var exca_soil_level = soil.findIndex(value => value.depth > steps_arr[num].step_depth)
 
-    var gamma_sub = soil[exca_soil_level].unit_weight - 1;
+    var gamma_sub = Math.round((soil[exca_soil_level].unit_weight - 1))*100/100;
     var D = Math.round((RW_height - steps_arr[num].step_depth)*100)/100;
     var delta_water_pressure = 0;
     
@@ -995,7 +995,7 @@ function quick_sand(RW_height,num){
     {
         gamma_sub = -1;
     }else{
-        delta_water_pressure = steps_arr[num].step_depth - G_W_T;
+        delta_water_pressure = Math.round((steps_arr[num].step_depth - G_W_T))*100/100;
     }
     
     var terzaghi = Math.round(2*gamma_sub*D/(1*delta_water_pressure)*100)/100;
